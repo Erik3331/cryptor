@@ -1,14 +1,21 @@
-async function converterParaCriptomoeda(valorEmReais, criptomoeda) {
-  const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${criptomoeda}`;
+let valorCriptomoeda;
+let valorConvertido;
 
-  const response = await fetch(url, {
-    headers: {
-      'X-CMC_PRO_API_KEY': 'cbf12941174c43c594e507140a232241'
-    }
-  });
+async function selecionarCriptomoeda(criptomoeda) {
+  const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${criptomoeda}&vs_currencies=brl`);
 
   const data = await response.json();
-  console.log(data);
+  valorCriptomoeda = data[criptomoeda].brl;
+
+  return valorCriptomoeda;
 }
 
-converterParaCriptomoeda(100, 'ETH');
+export async function converterValorParaCriptomoeda(valor, criptomoeda) {
+  await selecionarCriptomoeda(criptomoeda);
+
+  valorConvertido = valor / valorCriptomoeda;
+
+  return valorConvertido.toFixed(6)
+}
+
+converterValorParaCriptomoeda(100, 'bitcoin');
